@@ -7,6 +7,7 @@ import logger from './config/logger.config';
 import { attachCorrelationIdMiddleware } from './middlewares/correlation.middleware';
 import { startWorkers } from './workers/evaluation.worker';
 import { pullAllImages } from './utils/containers/pullImage.util'; 
+import { runPythonCode } from './utils/containers/pythonRunner.util';
 const app = express();
 
 app.use(express.json());
@@ -35,4 +36,15 @@ app.listen(serverConfig.PORT, async () => {
     logger.info("Background workers started successfully");
     await pullAllImages();
     console.log("Pulled all Docker images successfully");
+    await testPythonCode()
 });
+
+async function testPythonCode() {
+    const pythonCode = `
+print("Hello from the Python Docker container!")
+for i in range(5):
+    print(f"Counting: {i}")
+`;
+
+    await runPythonCode(pythonCode);
+}
