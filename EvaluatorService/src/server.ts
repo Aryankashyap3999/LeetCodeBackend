@@ -45,7 +45,7 @@ import time
 i = 0
 time.sleep(1)
 
-while True:
+while i > 3:
     i = i + 1
     print(f"Counting: {i}")
     time.sleep(1)
