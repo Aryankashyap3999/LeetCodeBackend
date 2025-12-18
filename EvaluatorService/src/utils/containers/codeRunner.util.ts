@@ -1,19 +1,19 @@
-import { PYTHON_DOCKER_IMAGE } from "../constants";
 import { commands } from "./commands.utils";
 import { createDockerContainer } from "./createContainer.utils";
 
-const allowedLanguages = ['python'];
+const allowedLanguages = ['python', 'cpp'];
 
 export interface RunCodeOptions {
     code: string;
-    language: 'python';
+    language: 'python' | 'cpp';
     timeout: number;
-    imageName?: string;
+    imageName: string;
+    input?: string
 }
 
 export async function runCode(options: RunCodeOptions) {
 
-    const { code, language, timeout, imageName } = options;
+    const { code, language, timeout, imageName, input } = options;
 
     if(!allowedLanguages.includes(language)) {
         throw new Error(`Language ${language} is not supported.`);
@@ -21,8 +21,8 @@ export async function runCode(options: RunCodeOptions) {
 
 
     const container = await createDockerContainer({
-        imageName: imageName || PYTHON_DOCKER_IMAGE,
-        cmdExecutable: commands[language](code),
+        imageName: imageName ,
+        cmdExecutable: commands[language](code, input || ""),
         memoryLimit: 256 * 1024 * 1024, // 256 MB
     });
 
@@ -44,16 +44,26 @@ export async function runCode(options: RunCodeOptions) {
         follow: false
     });
 
-    const outputLogs = output?.toString('utf-8');
-    console.log("Container output:\n", outputLogs);
+    // Remove Docker log frame headers (null bytes) and control characters
+    // Keep only printable text and standard whitespace
+    const logsString = processingLogs(output?.toString('utf-8'));
+    console.log("logsString", logsString);
 
     await container?.remove();
+
 
     clearTimeout(timeLimitExccedTimeout);
 
     if(status.StatusCode == 0) {
-        console.log("Python code executed successfully");
+        console.log("Code executed successfully");
     } else {
-        console.error("Python code execution failed");
+        console.error("Code execution failed");
     }
 }
+
+function processingLogs(logs: string | undefined): string {
+    return logs ? logs
+        .replace(/\x00/g, '') // Remove null bytes
+        .replace(/[\x00-\x09\x0B-\x1F\x7F-\x9F]/g, '') // Remove control characters except tab/newline
+        .trim() : "";
+}   

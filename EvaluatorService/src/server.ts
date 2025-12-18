@@ -8,6 +8,7 @@ import { attachCorrelationIdMiddleware } from './middlewares/correlation.middlew
 import { startWorkers } from './workers/evaluation.worker';
 import { pullAllImages } from './utils/containers/pullImage.util'; 
 import { runCode } from './utils/containers/codeRunner.util';
+import { CPP_DOCKER_IMAGE } from './utils/constants';
 const app = express();
 
 app.use(express.json());
@@ -36,25 +37,28 @@ app.listen(serverConfig.PORT, async () => {
     logger.info("Background workers started successfully");
     await pullAllImages();
     console.log("Pulled all Docker images successfully");
-    await testPythonCode()
+    await testCppCode()
 });
 
-async function testPythonCode() {
-    const pythonCode = `
-import time
-i = 0
-time.sleep(1)
+async function testCppCode() {
 
-while i > 3:
-    i = i + 1
-    print(f"Counting: {i}")
-    time.sleep(1)
-print("Bye!")
+    const cppCode = `
+#include <iostream>
+using namespace std;
+
+int main() {
+    int n;
+    cin >> n;
+    cout << n * n << endl;
+    return 0;
+}
 `;
 
     await runCode({
-        code: pythonCode,   
-        language: 'python',
-        timeout: 5000
+        code: cppCode,   
+        language: 'cpp',
+        timeout: 5000,
+        imageName: CPP_DOCKER_IMAGE,
+        input: "6"
     });
 }
