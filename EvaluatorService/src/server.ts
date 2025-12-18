@@ -7,7 +7,7 @@ import logger from './config/logger.config';
 import { attachCorrelationIdMiddleware } from './middlewares/correlation.middleware';
 import { startWorkers } from './workers/evaluation.worker';
 import { pullAllImages } from './utils/containers/pullImage.util'; 
-import { runPythonCode } from './utils/containers/pythonRunner.util';
+import { runCode } from './utils/containers/codeRunner.util';
 const app = express();
 
 app.use(express.json());
@@ -41,10 +41,20 @@ app.listen(serverConfig.PORT, async () => {
 
 async function testPythonCode() {
     const pythonCode = `
-print("Hello from the Python Docker container!")
-for i in range(5):
+import time
+i = 0
+time.sleep(1)
+
+while True:
+    i = i + 1
     print(f"Counting: {i}")
+    time.sleep(1)
+print("Bye!")
 `;
 
-    await runPythonCode(pythonCode);
+    await runCode({
+        code: pythonCode,   
+        language: 'python',
+        timeout: 5000
+    });
 }
