@@ -6,7 +6,7 @@ import { appErrorHandler, genericErrorHandler } from './middlewares/error.middle
 import logger from './config/logger.config';
 import { attachCorrelationIdMiddleware } from './middlewares/correlation.middleware';
 import { startWorkers } from './workers/evaluation.worker';
-import { pullAllImages } from './utils/containers/pullImage.util';
+import { pullAllImages } from './utils/containers/pullImage.util'; 
 const app = express();
 
 app.use(express.json());

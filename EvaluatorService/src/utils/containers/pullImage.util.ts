@@ -34,6 +34,7 @@ export async function pullAllImages() {
         logger.info("All Docker images pulled successfully");
     } catch (error) {
         logger.error("Error pulling Docker images:", error);
-
     }
+    
+    
 }
