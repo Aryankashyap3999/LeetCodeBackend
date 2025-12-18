@@ -44,7 +44,7 @@ export class SubmissionService implements ISubmissionService {
         // submission to redis queue 
         const jobId = await addSubmissionJobToQueue({
             submissionId: submission._id.toString(),        // add submission payload to db
-            problemId: submission.problemId,
+            problem: problem,
             code: submission.code,
             language: submission.language
         });

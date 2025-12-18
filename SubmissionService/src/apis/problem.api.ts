@@ -31,6 +31,7 @@ export async function getProblemById(problemId: string): Promise<IProblemDetails
         if(response.data && response.data.success) {
             return response.data.data;
         }
+        console.log(response.data);
         throw new InternalServerError(`Failed to fetch problem with id ${problemId}`);    
     } catch (error) {
         logger.error(`Error fetching problem by ID: ${error}`);
