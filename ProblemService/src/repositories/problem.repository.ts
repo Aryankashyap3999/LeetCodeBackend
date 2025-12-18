@@ -17,7 +17,7 @@ export class ProblemRepository implements IProblemRepository {
 
     }
     async getProblemById(id: string): Promise<IProblem | null> {
-        const problem = await ProblemModel.findById(id);
+        const problem = await ProblemModel.findById(id)
         return problem;
         throw new Error("Method not implemented.");
     }
