@@ -1,23 +1,24 @@
 import mongoose, { Document } from "mongoose";
 
 export enum SubmissionStatus {
+    COMPLETED = "completed",
     PENDING = "pending",
-    COMPILING = "compiling",
-    RUNNING = "running",
-    SUCCESS = "success",
-    FAILED = "failed"
 }
 
 export enum SubmissionLanguage {    
     PYTHON = "python",
-    CPP = "c++",
-}   
+    CPP = "cpp",
+}  
+
+// Map of testcase id -> verdict (e.g. { "<testcaseId>": "AC" | "WA" | "TLE" | "Error" })
+export type ISubmissionData = Record<string, string>;
 
 export interface ISubmission extends Document {
     problemId: string;
     code: string;
     language: SubmissionLanguage;
     status: SubmissionStatus;
+    submissionData: ISubmissionData;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -34,6 +35,11 @@ const submissionSchema = new mongoose.Schema<ISubmission>({
         required: true,
         enum: Object.values(SubmissionStatus), 
         default: SubmissionStatus.PENDING 
+    },
+    submissionData: {
+        type: mongoose.Schema.Types.Mixed,
+        required: false,
+        default: {}
     }
 }, { 
     timestamps: true,

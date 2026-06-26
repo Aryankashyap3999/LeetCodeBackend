@@ -13,8 +13,10 @@ export const createSubmissionSchema = z.object({
 // Schema for updating submission status
 export const updateSubmissionStatusSchema = z.object({
     status: z.nativeEnum(SubmissionStatus, {
-        errorMap: () => ({ message: "Status must be one of: pending, compiling, running, accepted, wrong_answer" })
-    })
+        errorMap: () => ({ message: "Status must be one of: pending, completed" })
+    }),
+    // Map of testcase id -> verdict, produced by the evaluator
+    submissionData: z.record(z.string(), z.string())
 });
 
 // Schema for query parameters (if needed for filtering)
@@ -24,3 +26,4 @@ export const submissionQuerySchema = z.object({
     limit: z.string().transform(val => parseInt(val)).pipe(z.number().min(1).max(100)).optional(),
     page: z.string().transform(val => parseInt(val)).pipe(z.number().min(1)).optional()
 });
+

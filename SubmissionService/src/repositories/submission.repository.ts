@@ -1,11 +1,11 @@
-import { ISubmission, SubmissionStatus } from "../models/submission.model";
+import { ISubmission, ISubmissionData, SubmissionStatus } from "../models/submission.model";
 
 export interface ISubmissionRepository {
     create(submissionData: Partial<ISubmission>): Promise<ISubmission>;
     findById(id: string): Promise<ISubmission | null>;
     findByProblemId(id: string): Promise<ISubmission[]>;
     deleteById(id: string): Promise<boolean>;
-    updateStatus(id: string, status: SubmissionStatus): Promise<ISubmission | null>;
+    updateStatus(id: string, status: SubmissionStatus, submissionData: ISubmissionData): Promise<ISubmission | null>;
 }
 
 export class SubmissionRepository implements ISubmissionRepository {
@@ -29,10 +29,10 @@ export class SubmissionRepository implements ISubmissionRepository {
         return result.deletedCount === 1;
     }
 
-    async updateStatus(id: string, status: SubmissionStatus): Promise<ISubmission | null> {
+    async updateStatus(id: string, status: SubmissionStatus, submissionData: ISubmissionData): Promise<ISubmission | null> {
         return await this.submissionModel.findByIdAndUpdate(
             id,
-            { status },
+            { status, submissionData },
             { new: true }
         ).exec();       
     }

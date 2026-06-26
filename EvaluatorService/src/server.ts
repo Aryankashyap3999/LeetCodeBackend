@@ -7,8 +7,7 @@ import logger from './config/logger.config';
 import { attachCorrelationIdMiddleware } from './middlewares/correlation.middleware';
 import { startWorkers } from './workers/evaluation.worker';
 import { pullAllImages } from './utils/containers/pullImage.util'; 
-import { runCode } from './utils/containers/codeRunner.util';
-import { CPP_DOCKER_IMAGE } from './utils/constants';
+
 const app = express();
 
 app.use(express.json());
@@ -37,28 +36,28 @@ app.listen(serverConfig.PORT, async () => {
     logger.info("Background workers started successfully");
     await pullAllImages();
     console.log("Pulled all Docker images successfully");
-    await testCppCode()
+    // await testCppCode()
 });
 
-async function testCppCode() {
+// async function testCppCode() {
 
-    const cppCode = `
-#include <iostream>
-using namespace std;
+//     const cppCode = `
+// #include <iostream>
+// using namespace std;
 
-int main() {
-    int n;
-    cin >> n;
-    cout << n * n << endl;
-    return 0;
-}
-`;
+// int main() {
+//     int n;
+//     cin >> n;
+//     cout << n * n << endl;
+//     return 0;
+// }
+// `;
 
-    await runCode({
-        code: cppCode,   
-        language: 'cpp',
-        timeout: 5000,
-        imageName: CPP_DOCKER_IMAGE,
-        input: "6"
-    });
-}
+//     await runCode({
+//         code: cppCode,   
+//         language: 'cpp',
+//         timeout: 5000,
+//         imageName: CPP_DOCKER_IMAGE,
+//         input: "6"
+//     });
+// }

@@ -1,4 +1,4 @@
-import { ISubmission, SubmissionStatus } from "../models/submission.model";
+import { ISubmission, ISubmissionData, SubmissionStatus } from "../models/submission.model";
 import { ISubmissionRepository } from "../repositories/submission.repository";
 import { BadRequestError, NotFoundError } from "../utils/errors/app.error";
 import { getProblemById } from "../apis/problem.api";
@@ -10,7 +10,7 @@ export interface ISubmissionService {
     getSubmissionById(id: string): Promise<ISubmission | null>;
     getSubmissionsByProblemId(problemId: string): Promise<ISubmission[]>;
     deleteSubmissionById(id: string): Promise<boolean>;
-    updateSubmissionStatus(id: string, status: SubmissionStatus): Promise<ISubmission | null>;
+    updateSubmissionStatus(id: string, status: SubmissionStatus, submissionData: ISubmissionData): Promise<ISubmission | null>;
 }
 
 export class SubmissionService implements ISubmissionService {
@@ -43,7 +43,7 @@ export class SubmissionService implements ISubmissionService {
 
         // submission to redis queue 
         const jobId = await addSubmissionJobToQueue({
-            submissionId: submission._id.toString(),        // add submission payload to db
+            submissionId: submission._id.toString(),        // add submissionISubmissionData payload to db
             problem: problem,
             code: submission.code,
             language: submission.language
@@ -74,8 +74,8 @@ export class SubmissionService implements ISubmissionService {
         return result;
     }
 
-    async updateSubmissionStatus(id: string, status: SubmissionStatus): Promise<ISubmission | null> {
-        const submission = await this.submissionRepository.updateStatus(id, status);
+    async updateSubmissionStatus(id: string, status: SubmissionStatus, submissionData: ISubmissionData): Promise<ISubmission | null> {
+        const submission = await this.submissionRepository.updateStatus(id, status, submissionData);
         if(!submission) {
             throw new NotFoundError(`Submission with id ${id} not found`);
         }
